@@ -2,7 +2,7 @@
 if (!isConnect('admin')) {
 	throw new Exception('{{401 - Accès non autorisé}}');
 }
-$plugin = plugin::byId('template');
+$plugin = plugin::byId('ze');
 sendVarToJS('eqType', $plugin->getId());
 $eqLogics = eqLogic::byType($plugin->getId());
 ?>
@@ -24,7 +24,7 @@ foreach ($eqLogics as $eqLogic) {
    </div>
 
    <div class="col-lg-10 col-md-9 col-sm-8 eqLogicThumbnailDisplay" style="border-left: solid 1px #EEE; padding-left: 25px;">
-    <legend>{{Mes templates}}</legend>
+    <legend>{{Mes véhicules}}</legend>
   <legend><i class="fa fa-cog"></i>  {{Gestion}}</legend>
   <div class="eqLogicThumbnailContainer">
       <div class="cursor eqLogicAction" data-action="add" style="text-align: center; background-color : #ffffff; height : 120px;margin-bottom : 10px;padding : 5px;border-radius: 2px;width : 160px;margin-left : 10px;" >
@@ -38,7 +38,7 @@ foreach ($eqLogics as $eqLogic) {
     <span style="font-size : 1.1em;position:relative; top : 15px;word-break: break-all;white-space: pre-wrap;word-wrap: break-word;color:#767676">{{Configuration}}</span>
   </div>
   </div>
-  <legend><i class="fa fa-table"></i> {{Mes templates}}</legend>
+  <legend><i class="fa fa-table"></i> {{Mes véhicules}}</legend>
 <div class="eqLogicThumbnailContainer">
     <?php
 foreach ($eqLogics as $eqLogic) {
@@ -68,7 +68,7 @@ foreach ($eqLogics as $eqLogic) {
     <form class="form-horizontal">
         <fieldset>
             <div class="form-group">
-                <label class="col-sm-3 control-label">{{Nom de l'équipement template}}</label>
+                <label class="col-sm-3 control-label">{{Nom de l'équipement}}</label>
                 <div class="col-sm-3">
                     <input type="text" class="eqLogicAttr form-control" data-l1key="id" style="display : none;" />
                     <input type="text" class="eqLogicAttr form-control" data-l1key="name" placeholder="{{Nom de l'équipement template}}"/>
@@ -107,11 +107,11 @@ foreach (object::all() as $object) {
 		</div>
 	</div>
        <div class="form-group">
-        <label class="col-sm-3 control-label">{{template param 1}}</label>
+        <label class="col-sm-3 control-label">{{username}}</label>
         <div class="col-sm-3">
-            <input type="text" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="city" placeholder="param1"/>
+            <input type="text" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="city" placeholder="username"/>
         </div>
-    </div>
+      </div>
 </fieldset>
 </form>
 </div>
@@ -132,5 +132,5 @@ foreach (object::all() as $object) {
 </div>
 </div>
 
-<?php include_file('desktop', 'template', 'js', 'template');?>
+<?php include_file('desktop', 'ze', 'js', 'ze');?>
 <?php include_file('core', 'plugin.template', 'js');?>
