@@ -1,14 +1,11 @@
 {
 	"id" : "ze",
 	"name" : "ze",
-	"description" : "Plugin pour la connexion avec renault ZE",
+	"description" : "Plugin pour la connexion avec les véhicules Renault ZE",
 	"licence" : "AGPL",
-	"author" : "anto35",
+	"author" : "Antor",
 	"require" : "3.1.5",
-	"category" : "programming",
+	"category" : "devicecommunication",
 	"hasDependency" : false,
-	"hasOwnDeamon" : false,
-	"maxDependancyInstallTime" : 0,
-	"changelog" : "https://github.com/jeedom/plugin-template/blob/master/doc/#language#/changelog.asciidoc",
-	"documentation" : "https://github.com/jeedom/plugin-template/blob/master/doc/#language#/index.asciidoc"
+	"hasOwnDeamon" : false
 }
