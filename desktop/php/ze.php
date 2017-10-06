@@ -107,9 +107,9 @@ foreach (object::all() as $object) {
 		</div>
 	</div>
        <div class="form-group">
-        <label class="col-sm-3 control-label">{{username}}</label>
+        <label class="col-sm-3 control-label">{{VIN}}</label>
         <div class="col-sm-3">
-            <input type="text" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="city" placeholder="username"/>
+            <input type="text" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="city" placeholder="VIN"/>
         </div>
       </div>
 </fieldset>

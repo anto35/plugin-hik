@@ -22,29 +22,54 @@ if (!isConnect()) {
     die();
 }
 ?>
+
 <form class="form-horizontal">
+  <div class="form-group">
     <fieldset>
+
+      <form class="form-horizontal">
         <div class="form-group">
-            <label class="col-lg-4 control-label">{{Global param 1}}</label>
-            <div class="col-lg-2">
-                <input class="configKey form-control" data-l1key="param1" />
+          <fieldset>
+
+            <div class="form-group">
+              <label class="col-lg-4 control-label">{{Username : }}</label>
+              <div class="col-lg-4">
+                <input class="configKey form-control" data-l1key="username" style="margin-top:5px" placeholder="Username"/>
+              </div>
             </div>
-        </div>
-        <div class="form-group">
-            <label class="col-lg-4 control-label">{{Global param 2}}</label>
-            <div class="col-lg-2">
-                <input class="configKey form-control" data-l1key="param2" value="80" />
+
+            <div class="form-group">
+              <label class="col-lg-4 control-label">{{Password : }}</label>
+              <div class="col-lg-4">
+                <input class="configKey form-control" data-l1key="password" style="margin-top:5px" placeholder="Password" type="password"/>
+              </div>
             </div>
-        </div>
-        <div class="form-group">
-            <label class="col-lg-4 control-label">{{Global param 2}}</label>
-            <div class="col-lg-2">
-                <select class="configKey form-control" data-l1key="param3">
-                    <option value="value1">value1</option>
-                    <option value="value2">value2</option>
-                </select>
-            </div>
-        </div>
-  </fieldset>
+
+          </div>
+        </fieldset>
+      </div>
 </form>
 
+    <script>
+
+    function ze_postSaveConfiguration(){
+      $.ajax({// fonction permettant de faire de l'ajax
+      type: "POST", // methode de transmission des données au fichier php
+      url: "plugins/ze/core/ajax/ze.ajax.php", // url du fichier php
+      data: {
+        action: "postSave",
+      },
+      dataType: 'json',
+      error: function (request, status, error) {
+        handleAjaxError(request, status, error);
+      },
+      success: function (data) { // si l'appel a bien fonctionné
+      if (data.state != 'ok') {
+        $('#div_alert').showAlert({message: data.result, level: 'danger'});
+        return;
+      }
+    }
+  });
+}
+
+</script>

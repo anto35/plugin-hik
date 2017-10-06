@@ -23,9 +23,11 @@ try {
     if (!isConnect('admin')) {
         throw new Exception(__('401 - Accès non autorisé', __FILE__));
     }
-    
-    ajax::init();
 
+    if (init('action') == 'postSave') {
+        ze::pageConf();
+        ajax::success();
+    }
 
 
     throw new Exception(__('Aucune méthode correspondante à : ', __FILE__) . init('action'));
