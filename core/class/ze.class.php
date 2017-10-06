@@ -21,8 +21,8 @@ require_once dirname(__FILE__) . '/../../../../core/php/core.inc.php';
 
 class ze extends eqLogic {
 
-   public static function cron15() {
-    ze::updateObjects();
+   public static function cron5() {
+      ze::updateObjects();
     }
 
   public function postSave() {
@@ -56,20 +56,35 @@ class ze extends eqLogic {
     $range->setEqLogic_id($this->getId());
     $range->save();
 
-    $status = $this->getCmd(null, 'status');
-    if (!is_object($status)) {
-        $status = new zeCmd();
-        $status->setLogicalId('status');
-        $status->setIsVisible(1);
-        $status->setName(__('Statut', __FILE__));
+    $charging = $this->getCmd(null, 'charging');
+    if (!is_object($charging)) {
+        $charging = new zeCmd();
+        $charging->setLogicalId('charging');
+        $charging->setIsVisible(1);
+        $charging->setName(__('Charging', __FILE__));
     }
-    $status->setType('info');
-    $status->setEventOnly(1);
-    $status->setUnite('');
-    $status->setConfiguration('onlyChangeEvent',1);
-    $status->setSubType('string');
-    $status->setEqLogic_id($this->getId());
-    $status->save();
+    $charging->setType('info');
+    $charging->setEventOnly(1);
+    $charging->setUnite('');
+    $charging->setConfiguration('onlyChangeEvent',1);
+    $charging->setSubType('binary');
+    $charging->setEqLogic_id($this->getId());
+    $charging->save();
+    
+    $plugged = $this->getCmd(null, 'plugged');
+    if (!is_object($plugged)) {
+        $plugged = new zeCmd();
+        $plugged->setLogicalId('plugged');
+        $plugged->setIsVisible(1);
+        $plugged->setName(__('Plugged', __FILE__));
+    }
+    $plugged->setType('info');
+    $plugged->setEventOnly(1);
+    $plugged->setUnite('');
+    $plugged->setConfiguration('onlyChangeEvent',1);
+    $plugged->setSubType('binary');
+    $plugged->setEqLogic_id($this->getId());
+    $plugged->save();
     
     $last_update = $this->getCmd(null, 'last_update');
     if (!is_object($last_update)) {
@@ -81,7 +96,7 @@ class ze extends eqLogic {
     $last_update->setUnite('');
     $last_update->setType('info');
     $last_update->setEventOnly(1);
-    $last_update->setSubType('numeric');
+    $last_update->setSubType('string');
     $last_update->setEqLogic_id($this->getId());
     $last_update->save();
     
@@ -102,30 +117,7 @@ class ze extends eqLogic {
     ze::updateObjects();
   }
 
-  public function preUpdate() {
-      log::add('ze', 'debug', 'preUpdate : ');
-  }
-
-  public function postUpdate() {
-      log::add('ze', 'debug', 'postUpdate : ');
-  }
-
-  public function preRemove() {
-      log::add('ze', 'debug', 'preRemove : ' . print_r($json, true));
-  }
-
-  public function postRemove() {
-      log::add('ze', 'debug', 'PostRemove : ' . print_r($json, true));
-  }
-
-  /*
-   * Non obligatoire mais permet de modifier l'affichage du widget si vous en avez besoin
-    public function toHtml($_version = 'dashboard') {
-
-    }
-   */
   public function pageConf() {
-    //sur sauvegarde page de conf update des infos de l'API (lockers existants, batterie, status) + verification que les share sont existants
     ze::login();
   }
   
@@ -134,7 +126,6 @@ class ze extends eqLogic {
   }
 
   public function updateObjects() {
-    //scan des lockers par les gateways toutes les 15mn
     foreach (eqLogic::byType('ze', true) as $vehicle) {
         ze::updateBattery($vehicle->getLogicalId());
       }
@@ -158,19 +149,20 @@ class ze extends eqLogic {
     curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
     
     $json = json_decode(curl_exec($ch), true);
-    $charging = $json['charging'] === 'true'? 'en charge': 'pas en charge';
+    $charging = $json['charging'] ? 1:0;
+    $plugged = $json['plugged'] ? 1:0;
     $charge_level = $json['charge_level'];
     $range = $json['remaining_range'];
     $charging_point = $json['charging_point'];
-    $last_update = $json['last_update'];
-    
-    log::add('ze', 'debug', 'updateBattery : ' . print_r($json, true));
+    $last_update = new DateTime();
+    $last_update->setTimestamp($json['last_update']/1000);
     
     $ze->checkAndUpdateCmd('battery', $charge_level);
     $ze->checkAndUpdateCmd('range', $range);
-    $ze->checkAndUpdateCmd('status', $charging);
-    $ze->checkAndUpdateCmd('ChargingPoint', $charging_point);
-    $ze->checkAndUpdateCmd('lastUpdate', $last_update);
+    $ze->checkAndUpdateCmd('charging', $charging);
+    $ze->checkAndUpdateCmd('plugged', $plugged);
+    $ze->checkAndUpdateCmd('charging_point', $charging_point);
+    $ze->checkAndUpdateCmd('last_update', $last_update->format('Y-m-d H:i:s'));
     curl_close ($ch);
   }
   
@@ -213,33 +205,14 @@ class ze extends eqLogic {
               ));
         }
     }
-
   }
- 
-  /*     * **********************Getteur Setteur*************************** */
 }
 
 class zeCmd extends cmd {
-  /*     * *************************Attributs****************************** */
-
-
-  /*     * ***********************Methode static*************************** */
-
-
-  /*     * *********************Methode d'instance************************* */
-
-  /*
-   * Non obligatoire permet de demander de ne pas supprimer les commandes même si elles ne sont pas dans la nouvelle configuration de l'équipement envoyé en JS
-    public function dontRemoveCmd() {
-    return true;
-    }
-   */
 
   public function execute($_options = array()) {
     return;
   }
-
-  /*     * **********************Getteur Setteur*************************** */
 }
 
 
