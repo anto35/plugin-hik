@@ -114,6 +114,45 @@ class ze extends eqLogic {
     $charging_point->setEqLogic_id($this->getId());
     $charging_point->save();
    
+    $last_precondition = $this->getCmd(null, 'last_precondition');
+    if (!is_object($last_precondition)) {
+        $last_precondition = new zeCmd();
+        $last_precondition->setLogicalId('last_precondition');
+        $last_precondition->setIsVisible(1);
+        $last_precondition->setName(__('lastPrecondition', __FILE__));
+    }
+    $last_precondition->setUnite('');
+    $last_precondition->setType('info');
+    $last_precondition->setEventOnly(1);
+    $last_precondition->setSubType('string');
+    $last_precondition->setEqLogic_id($this->getId());
+    $last_precondition->save();
+    
+    // Actions
+    $charge = $this->getCmd(null, 'charge');
+    if (!is_object($charge)) {
+        $charge = new zeCmd();
+        $charge->setLogicalId('charge');
+        $charge->setIsVisible(1);
+        $charge->setName(__('Charge', __FILE__));
+    }
+    $charge->setType('action');
+    $charge->setSubType('other');
+    $charge->setEqLogic_id($this->getId());
+    $charge->save();
+    
+    $pre_condition = $this->getCmd(null, 'pre_condition');
+    if (!is_object($pre_condition)) {
+        $pre_condition = new zeCmd();
+        $pre_condition->setLogicalId('pre_condition');
+        $pre_condition->setIsVisible(1);
+        $pre_condition->setName(__('PreCondition', __FILE__));
+    }
+    $pre_condition->setType('action');
+    $pre_condition->setSubType('other');
+    $pre_condition->setEqLogic_id($this->getId());
+    $pre_condition->save();
+    
     ze::updateObjects();
   }
 
@@ -124,6 +163,7 @@ class ze extends eqLogic {
   public function updateObjects() {
     foreach (eqLogic::byType('ze', true) as $vehicle) {
         ze::updateBattery($vehicle->getLogicalId());
+        ze::updatePreconditioning($vehicle->getLogicalId());
       }
   }
   
@@ -159,6 +199,75 @@ class ze extends eqLogic {
     $ze->checkAndUpdateCmd('plugged', $plugged);
     $ze->checkAndUpdateCmd('charging_point', $charging_point);
     $ze->checkAndUpdateCmd('last_update', $last_update->format('Y-m-d H:i:s'));
+    curl_close ($ch);
+  }
+  
+  public function charge($VIN) {
+    $ze = ze::byLogicalId($VIN, 'ze');
+    if (!is_object($ze)) {
+        return;
+    }
+    ze::login();
+    $ch = curl_init();
+    
+    curl_setopt($ch, CURLOPT_URL,"https://www.services.renault-ze.com/api/vehicle/" . $VIN . "/charge");
+    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "GET");
+    
+    $token = config::byKey('token','ze');
+    $headers = array();
+    $headers[] = "Authorization: Bearer " . $token;
+    curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+    
+    $result = curl_exec($ch);
+    log::add('ze', 'debug', 'Charge Return Status: ' . $result);
+    curl_close ($ch);
+  }
+  
+  public function precondition($VIN) {
+    $ze = ze::byLogicalId($VIN, 'ze');
+    if (!is_object($ze)) {
+        return;
+    }
+    ze::login();
+    $ch = curl_init();
+    
+    curl_setopt($ch, CURLOPT_URL,"https://www.services.renault-ze.com/api/vehicle/" . $VIN . "/air-conditioning");
+    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "GET");
+    
+    $token = config::byKey('token','ze');
+    $headers = array();
+    $headers[] = "Authorization: Bearer " . $token;
+    curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+    
+    $result = curl_exec($ch);
+    log::add('ze', 'debug', 'Precondition Return Status: ' . $result);
+    curl_close ($ch);
+  }
+  
+  public function updatePreconditioning($VIN) {
+    $ze = ze::byLogicalId($VIN, 'ze');
+    if (!is_object($ze)) {
+        return;
+    }
+    ze::login();
+    $ch = curl_init();
+    
+    curl_setopt($ch, CURLOPT_URL,"https://www.services.renault-ze.com/api/vehicle/" . $VIN . "/air-conditioning/last");
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "GET");
+    
+    $token = config::byKey('token','ze');
+    $headers = array();
+    $headers[] = "Authorization: Bearer " . $token;
+    curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+    
+    $json = json_decode(curl_exec($ch), true);
+    $date = new DateTime();
+    $date->setTimestamp($json['date']/1000);
+    $type = $json['type'];
+    $result = $json['result'];
+   
+    $ze->checkAndUpdateCmd('last_precondition', $date);
     curl_close ($ch);
   }
   
@@ -206,7 +315,16 @@ class ze extends eqLogic {
 class zeCmd extends cmd {
 
   public function execute($_options = array()) {
-    return;
+    $eqLogic = $this->getEqLogic();
+    if ($this->getLogicalId() == 'charge') {
+      $eqLogic->charge($eqLogic->getLogicalId());
+      return;  
+    }
+    if ($this->getLogicalId() == 'pre_condition') {
+      $eqLogic->precondition($eqLogic->getLogicalId());
+      return;  
+    }
+		return;
   }
 }
 
