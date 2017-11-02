@@ -215,7 +215,7 @@ class ze extends eqLogic {
     $ch = curl_init();
     
     curl_setopt($ch, CURLOPT_URL,"https://www.services.renault-ze.com/api/vehicle/" . $VIN . "/charge");
-    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "GET");
+    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
     
     $token = config::byKey('token','ze');
     $headers = array();
@@ -236,7 +236,7 @@ class ze extends eqLogic {
     $ch = curl_init();
     
     curl_setopt($ch, CURLOPT_URL,"https://www.services.renault-ze.com/api/vehicle/" . $VIN . "/air-conditioning");
-    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "GET");
+    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
     
     $token = config::byKey('token','ze');
     $headers = array();
