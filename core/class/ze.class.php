@@ -90,7 +90,7 @@ class ze extends eqLogic {
     if (!is_object($last_update)) {
         $last_update = new zeCmd();
         $last_update->setLogicalId('last_update');
-        $last_update->setIsVisible(1);
+        $last_update->setIsVisible(0);
         $last_update->setName(__('lastUpdate', __FILE__));
     }
     $last_update->setUnite('');
@@ -104,7 +104,7 @@ class ze extends eqLogic {
     if (!is_object($charging_point)) {
         $charging_point = new zeCmd();
         $charging_point->setLogicalId('charging_point');
-        $charging_point->setIsVisible(1);
+        $charging_point->setIsVisible(0);
         $charging_point->setName(__('ChargingPoint', __FILE__));
     }
     $charging_point->setUnite('');
@@ -118,7 +118,7 @@ class ze extends eqLogic {
     if (!is_object($last_precondition)) {
         $last_precondition = new zeCmd();
         $last_precondition->setLogicalId('last_precondition');
-        $last_precondition->setIsVisible(1);
+        $last_precondition->setIsVisible(0);
         $last_precondition->setName(__('lastPrecondition', __FILE__));
     }
     $last_precondition->setUnite('');
@@ -136,9 +136,11 @@ class ze extends eqLogic {
         $charge->setIsVisible(1);
         $charge->setName(__('Charge', __FILE__));
     }
+    $charge->setDisplay('icon', '<i class="icon techno-charging"></i>');
     $charge->setType('action');
     $charge->setSubType('other');
     $charge->setEqLogic_id($this->getId());
+    $charge->setOrder(1);
     $charge->save();
     
     $pre_condition = $this->getCmd(null, 'pre_condition');
@@ -148,9 +150,11 @@ class ze extends eqLogic {
         $pre_condition->setIsVisible(1);
         $pre_condition->setName(__('PreCondition', __FILE__));
     }
+    $pre_condition->setDisplay('icon', '<i class="icon nature-snowflake"></i>');
     $pre_condition->setType('action');
     $pre_condition->setSubType('other');
     $pre_condition->setEqLogic_id($this->getId());
+    $pre_condition->setOrder(2);
     $pre_condition->save();
     
     ze::updateObjects();
