@@ -196,13 +196,12 @@ class ze extends eqLogic {
     $charging_point = $json['charging_point'];
     $last_update = new DateTime();
     $last_update->setTimestamp($json['last_update']/1000);
-    
     $ze->checkAndUpdateCmd('battery', $charge_level);
     $ze->checkAndUpdateCmd('range', $range);
     $ze->checkAndUpdateCmd('charging', $charging);
     $ze->checkAndUpdateCmd('plugged', $plugged);
     $ze->checkAndUpdateCmd('charging_point', $charging_point);
-    $ze->checkAndUpdateCmd('last_update', $last_update->format('Y-m-d H:i:s'));
+    $ze->checkAndUpdateCmd('last_update', $last_update->format('d/m/Y H:i:s'));
     curl_close ($ch);
   }
   
@@ -267,11 +266,9 @@ class ze extends eqLogic {
     
     $json = json_decode(curl_exec($ch), true);
     $date = new DateTime();
+    log::add('ze', 'debug', 'Last Preco: ' . $json['date']);
     $date->setTimestamp($json['date']/1000);
-    $type = $json['type'];
-    $result = $json['result'];
-   
-    $ze->checkAndUpdateCmd('last_precondition', $date);
+    $ze->checkAndUpdateCmd('last_precondition', $date->format('d/m/Y H:i:s'));
     curl_close ($ch);
   }
   
