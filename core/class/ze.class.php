@@ -46,7 +46,7 @@ class ze extends eqLogic {
         $range = new zeCmd();
         $range->setLogicalId('range');
         $range->setIsVisible(1);
-        $range->setName(__('range', __FILE__));
+        $range->setName(__('Range', __FILE__));
     }
     $range->setUnite(' kms');
     $range->setType('info');
@@ -120,10 +120,6 @@ class ze extends eqLogic {
   public function pageConf() {
     ze::login();
   }
-  
-  public function updateUser() {
-    ze::login();  
-  }
 
   public function updateObjects() {
     foreach (eqLogic::byType('ze', true) as $vehicle) {
@@ -170,7 +166,6 @@ class ze extends eqLogic {
     if (time() < config::byKey('timestamp','ze')) {
         return;
     }
-    log::add('ze', 'debug', 'Retour1 : ');
     
     $curl = curl_init();
     curl_setopt($curl, CURLOPT_URL,"https://www.services.renault-ze.com/api/user/login");
@@ -186,7 +181,7 @@ class ze extends eqLogic {
     $json = json_decode(curl_exec($curl), true);
     curl_close ($curl);
 
-    $timestamp = time() + (2 * 60 * 60);
+    $timestamp = time() + (3600);
     config::save('timestamp', $timestamp,  'ze');
 
     config::save('token', $json['token'],  'ze');
