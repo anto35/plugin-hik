@@ -161,6 +161,12 @@ class ze extends eqLogic {
   }
 
   public function pageConf() {
+    config::save('timestamp', 0,  'ze');
+    ze::login();
+  }
+
+  public function updateUser() {
+    config::save('timestamp', 0,  'ze');
     ze::login();
   }
 
