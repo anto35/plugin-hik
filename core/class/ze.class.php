@@ -46,6 +46,9 @@ class ze extends eqLogic {
         $range = new zeCmd();
         $range->setLogicalId('range');
         $range->setIsVisible(1);
+ 	$range->setTemplate("mobile",'tile' );
+	$range->setTemplate("dashboard",'tile' );
+ 
         $range->setName(__('Range', __FILE__));
     }
     $range->setUnite(' kms');
