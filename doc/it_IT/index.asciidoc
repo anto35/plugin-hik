@@ -1,0 +1,27 @@
+== Template
+
+=== Description
+Plugin permettant la connexion avec votre véhicule Renault ZE.
+
+'''
+=== Configuration du plugin.
+
+Dans la page de configuration de votre nouveau plugin, vous avez deux (!) champs à renseigner.
+
+Ils sont normalement assez explicites: 
+- username correspond à votre mail d'accès au service ZE Services.
+- password correspond à votre mot de passe
+
+Une fois sauvegardés ces deux éléments, la liste des véhicules est automatiquement mise à jour.
+
+'''
+=== Configuration du véhicule
+
+Le nouveau véhicule a un nom basé sur son VIN (cf. carte grise). 
+(j'aurais préféré mettre l'immat. mais elle n'est pas remontée par le service web de Renault)
+
+Vous pouvez renommer le véhicule comme bon vous semble.
+'''
+=== Voilà c'est fini
+... En tout cas pour l'instant.
+Je rajouterai sûrement cet hiver le lancement de la clim.
