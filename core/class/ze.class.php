@@ -160,6 +160,34 @@ class ze extends eqLogic {
     $pre_condition->setOrder(2);
     $pre_condition->save();
     
+    $schedule_on = $this->getCmd(null, 'schedule_on');
+    if (!is_object($schedule_on)) {
+        $schedule_on = new zeCmd();
+        $schedule_on->setLogicalId('schedule_on');
+        $schedule_on->setIsVisible(0);
+        $schedule_on->setName(__('ScheduleOn', __FILE__));
+    }
+    $schedule_on->setDisplay('icon', '<i class="fa fa-calendar"></i>');
+    $schedule_on->setType('action');
+    $schedule_on->setSubType('other');
+    $schedule_on->setEqLogic_id($this->getId());
+    $schedule_on->setOrder(2);
+    $schedule_on->save();
+    
+    $schedule_off = $this->getCmd(null, 'schedule_off');
+    if (!is_object($schedule_off)) {
+        $schedule_off = new zeCmd();
+        $schedule_off->setLogicalId('schedule_off');
+        $schedule_off->setIsVisible(0);
+        $schedule_off->setName(__('ScheduleOff', __FILE__));
+    }
+    $schedule_off->setDisplay('icon', '<i class="fa fa-play"></i>');
+    $schedule_off->setType('action');
+    $schedule_off->setSubType('other');
+    $schedule_off->setEqLogic_id($this->getId());
+    $schedule_off->setOrder(2);
+    $schedule_off->save();
+    
     ze::updateObjects();
   }
 
@@ -256,6 +284,48 @@ class ze extends eqLogic {
     curl_close ($ch);
   }
   
+  public function applySchedule($VIN) {
+    $ze = ze::byLogicalId($VIN, 'ze');
+    if (!is_object($ze)) {
+        return;
+    }
+    ze::login();
+    $ch = curl_init();
+
+    curl_setopt($ch, CURLOPT_URL,"https://www.services.renault-ze.com/api/vehicle/" . $VIN . "/charge/scheduler/offboard/deploy");
+    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
+
+    $token = config::byKey('token','ze');
+    $headers = array();
+    $headers[] = "Authorization: Bearer " . $token;
+    curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+    
+    $result = curl_exec($ch);
+    log::add('ze', 'debug', 'applySchedule Return Status: ' . $result);
+    curl_close ($ch);
+  }
+  
+  public function ignoreSchedule($VIN) {
+    $ze = ze::byLogicalId($VIN, 'ze');
+    if (!is_object($ze)) {
+      return;
+    }
+    ze::login();
+    $ch = curl_init();
+    
+    curl_setopt($ch, CURLOPT_URL,"https://www.services.renault-ze.com/api/vehicle/" . $VIN . "/charge/scheduler/onboard");
+    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
+    curl_setopt($ch, CURLOPT_POSTFIELDS,"{\"enabled\":false}" ); 
+    $token = config::byKey('token','ze');
+    $headers = array();
+    $headers[] = "Authorization: Bearer " . $token;
+    curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+
+    $result = curl_exec($ch);
+    log::add('ze', 'debug', 'ignoreSchedule Return Status: ' . $result);
+    curl_close ($ch);
+  }
+  
   public function updatePreconditioning($VIN) {
     $ze = ze::byLogicalId($VIN, 'ze');
     if (!is_object($ze)) {
@@ -328,13 +398,21 @@ class zeCmd extends cmd {
     $eqLogic = $this->getEqLogic();
     if ($this->getLogicalId() == 'charge') {
       $eqLogic->charge($eqLogic->getLogicalId());
-      return;  
+      return;
     }
     if ($this->getLogicalId() == 'pre_condition') {
       $eqLogic->precondition($eqLogic->getLogicalId());
-      return;  
+      return;
     }
-		return;
+    if ($this->getLogicalId() == 'schedule_on') {
+      $eqLogic->applySchedule($eqLogic->getLogicalId());
+      return;
+    }
+    if ($this->getLogicalId() == 'schedule_off') {
+      $eqLogic->ignoreSchedule($eqLogic->getLogicalId());
+      return;
+    }
+    return;
   }
 }
 
