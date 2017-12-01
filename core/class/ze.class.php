@@ -174,20 +174,6 @@ class ze extends eqLogic {
     $schedule_on->setOrder(2);
     $schedule_on->save();
     
-    $schedule_off = $this->getCmd(null, 'schedule_off');
-    if (!is_object($schedule_off)) {
-        $schedule_off = new zeCmd();
-        $schedule_off->setLogicalId('schedule_off');
-        $schedule_off->setIsVisible(0);
-        $schedule_off->setName(__('ScheduleOff', __FILE__));
-    }
-    $schedule_off->setDisplay('icon', '<i class="fa fa-play"></i>');
-    $schedule_off->setType('action');
-    $schedule_off->setSubType('other');
-    $schedule_off->setEqLogic_id($this->getId());
-    $schedule_off->setOrder(2);
-    $schedule_off->save();
-    
     ze::updateObjects();
   }
 
@@ -305,29 +291,6 @@ class ze extends eqLogic {
     curl_close ($ch);
   }
   
-  public function ignoreSchedule($VIN) {
-    $ze = ze::byLogicalId($VIN, 'ze');
-    if (!is_object($ze)) {
-      return;
-    }
-    ze::login();
-    $ch = curl_init();
-    curl_setopt($ch, CURLOPT_URL,"https://www.services.renault-ze.com/api/vehicle/" . $VIN . "/charge/scheduler/onboard");
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "PUT");
-    curl_setopt($ch, CURLOPT_POSTFIELDS, "{\"enabled\":false}");
-    $token = config::byKey('token','ze');
-    $headers = array();
-    $headers[] = "Authorization: Bearer " . $token;
-    $headers[] = "Accept:application/json, text/plain, */*";
-    $headers[] = "Content-Type:application/json;charset=UTF-8";
-    curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-    $result = curl_exec($ch);
-    $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-    log::add('ze', 'debug', 'ignoreSchedule http code: ' . $httpcode );
-    curl_close ($ch);
-  }
-  
   public function updatePreconditioning($VIN) {
     $ze = ze::byLogicalId($VIN, 'ze');
     if (!is_object($ze)) {
@@ -408,10 +371,6 @@ class zeCmd extends cmd {
     }
     if ($this->getLogicalId() == 'schedule_on') {
       $eqLogic->applySchedule($eqLogic->getLogicalId());
-      return;
-    }
-    if ($this->getLogicalId() == 'schedule_off') {
-      $eqLogic->ignoreSchedule($eqLogic->getLogicalId());
       return;
     }
     return;
