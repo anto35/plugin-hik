@@ -312,17 +312,19 @@ class ze extends eqLogic {
     }
     ze::login();
     $ch = curl_init();
-    
     curl_setopt($ch, CURLOPT_URL,"https://www.services.renault-ze.com/api/vehicle/" . $VIN . "/charge/scheduler/onboard");
-    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
-    curl_setopt($ch, CURLOPT_POSTFIELDS,"{\"enabled\":false}" ); 
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "PUT");
+    curl_setopt($ch, CURLOPT_POSTFIELDS, "{\"enabled\":false}");
     $token = config::byKey('token','ze');
     $headers = array();
     $headers[] = "Authorization: Bearer " . $token;
+    $headers[] = "Accept:application/json, text/plain, */*";
+    $headers[] = "Content-Type:application/json;charset=UTF-8";
     curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-
     $result = curl_exec($ch);
-    log::add('ze', 'debug', 'ignoreSchedule Return Status: ' . $result);
+    $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    log::add('ze', 'debug', 'ignoreSchedule http code: ' . $httpcode );
     curl_close ($ch);
   }
   
