@@ -131,6 +131,21 @@ class ze extends eqLogic {
     $last_precondition->setEqLogic_id($this->getId());
     $last_precondition->save();
     
+    $schedule_status = $this->getCmd(null, 'schedule_status');
+    if (!is_object($schedule_status)) {
+        $schedule_status = new zeCmd();
+        $schedule_status->setLogicalId('schedule_status');
+        $schedule_status->setIsVisible(0);
+        $schedule_status->setName(__('scheduleStatus', __FILE__));
+    }
+    $schedule_status->setType('info');
+    $schedule_status->setEventOnly(1);
+    $schedule_status->setUnite('');
+    $schedule_status->setConfiguration('onlyChangeEvent',1);
+    $schedule_status->setSubType('binary');
+    $schedule_status->setEqLogic_id($this->getId());
+    $schedule_status->save();
+
     // Actions
     $charge = $this->getCmd(null, 'charge');
     if (!is_object($charge)) {
@@ -191,6 +206,7 @@ class ze extends eqLogic {
     foreach (eqLogic::byType('ze', true) as $vehicle) {
         ze::updateBattery($vehicle->getLogicalId());
         ze::updatePreconditioning($vehicle->getLogicalId());
+        ze::updateSchedule($vehicle->getLogicalId());
       }
   }
   
@@ -228,6 +244,29 @@ class ze extends eqLogic {
     curl_close ($ch);
   }
   
+    public function updateSchedule($VIN) {
+    $ze = ze::byLogicalId($VIN, 'ze');
+    if (!is_object($ze)) {
+        return;
+    }
+    ze::login();
+    $ch = curl_init();
+
+    curl_setopt($ch, CURLOPT_URL,"https://www.services.renault-ze.com/api/vehicle/" . $VIN . "/charge/scheduler/onboard");
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "GET");
+
+    $token = config::byKey('token','ze');
+    $headers = array();
+    $headers[] = "Authorization: Bearer " . $token;
+    curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+
+    $json = json_decode(curl_exec($ch), true);
+    $enabled = $json['enabled'] ? 1:0;
+    $ze->checkAndUpdateCmd('battery', $schedule_status);
+    curl_close ($ch);
+  }
+
   public function charge($VIN) {
     $ze = ze::byLogicalId($VIN, 'ze');
     if (!is_object($ze)) {
