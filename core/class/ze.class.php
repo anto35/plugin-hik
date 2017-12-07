@@ -263,7 +263,7 @@ class ze extends eqLogic {
 
     $json = json_decode(curl_exec($ch), true);
     $enabled = $json['enabled'] ? 1:0;
-    $ze->checkAndUpdateCmd('battery', $schedule_status);
+    $ze->checkAndUpdateCmd('schedule_status', $schedule_status);
     curl_close ($ch);
   }
 
