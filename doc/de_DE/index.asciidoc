@@ -4,7 +4,7 @@
 Plugin permettant la connexion avec votre véhicule Renault ZE.
 
 '''
-=== Configuration du plugin.
+=== Plugin Konfiguration
 
 Dans la page de configuration de votre nouveau plugin, vous avez deux (!) champs à renseigner.
 
