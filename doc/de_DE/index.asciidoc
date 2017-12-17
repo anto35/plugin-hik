@@ -15,7 +15,7 @@ Ils sont normalement assez explicites:
 Une fois sauvegardés ces deux éléments, la liste des véhicules est automatiquement mise à jour.
 
 '''
-=== Configuration du véhicule
+=== Fahrzeugkonfiguration
 
 Le nouveau véhicule a un nom basé sur son VIN (cf. carte grise). 
 (j'aurais préféré mettre l'immat. mais elle n'est pas remontée par le service web de Renault)
