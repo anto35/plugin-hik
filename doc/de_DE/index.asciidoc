@@ -1,4 +1,4 @@
-== Template
+== Vorlage
 
 === Description
 Plugin permettant la connexion avec votre véhicule Renault ZE.
